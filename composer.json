@@ -1,0 +1,25 @@
+{
+    "name": "wontonee/paytm",
+    "description": "Paytm payment gateway for bagisto laravel ecommerce",
+    "authors": [
+        {
+            "name": "Saju G",
+            "email": "saju.g@wontonetech.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+	  "autoload": {
+        "psr-4": {
+            "Wontonee\\Paytm\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wontonee\\Paytm\\Providers\\PaytmServiceProvider"
+            ],
+            "aliases": {}
+        }
+    }
+}
