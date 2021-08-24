@@ -22,6 +22,13 @@ Paytm is a popular payment gateway in india. This package provides a additional 
 5. Now open the command prompt and run `composer dump-autoload`.
 6. Now run `php artisan config:cache`
 7. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
+8. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
+```sh
+protected $except = [
+        '/paytmcheck'
+];
+
+```
 
 For any help or customisation  <https://www.wontonee.com> or email us <hello@wontonee.com>
 
