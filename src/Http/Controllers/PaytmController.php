@@ -13,16 +13,13 @@ class PaytmController extends Controller
     /**
      * OrderRepository $orderRepository
      *
-     * @var \Webkul\Sales\Repositories\OrderRepository
+     * 
      */
     protected $orderRepository;
 
     /**
      * Create a new controller instance.
      *
-     * @param  \Webkul\Attribute\Repositories\OrderRepository  $orderRepository
-     * @param  \Webkul\Paypal\Helpers\Ipn  $ipnHelper
-     * @return void
      */
     public function __construct(OrderRepository $orderRepository)
     {
