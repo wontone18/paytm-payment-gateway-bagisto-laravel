@@ -3,7 +3,7 @@ Paytm is a popular payment gateway in india. This package provides a additional 
 
 ## Manual Installation
 1. Download the zip folder from the github repository.
-2. 2. Unzip the folder and go to your bagisto application path `package` and create a folder name `Wontonee/Paytm/` upload `src` folder inside this path.
+2. Unzip the folder and go to your bagisto application path `package` and create a folder name `Wontonee/Paytm/` upload `src` folder inside this path.
 3. Now open `config/app.php` and register paytm provider.
 ```sh
 'providers' => [
