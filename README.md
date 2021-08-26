@@ -24,10 +24,19 @@ Paytm is a popular payment gateway in india. This package provides a additional 
 7. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
 8. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
 ```sh
-protected $except = [
-        '/paytmcheck'
-];
+             protected $except = [
+                        '/paytmcheck'
+                        ];
 
+```
+9. Now go to `package/Webkul/Admin/src/Resources/lang/en` copy these line at the bottom end of code.
+```sh
+             'merchant-id'                      => 'Merchant Id',
+             'merchant-key'                      => 'Merchant Key',
+             'websitestatus'                      => 'Website',
+            'industrytype'                      => 'Industry Type',
+            'paytmstatus'                      => 'Status',
+            'callback-url'                      => 'Call Back URL'
 ```
 
 For any help or customisation  <https://www.wontonee.com> or email us <hello@wontonee.com>
