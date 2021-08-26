@@ -14,7 +14,7 @@ Paytm is a popular payment gateway in india. This package provides a additional 
 ```sh
 "autoload": {
         "psr-4": {
-        "Wontonee\\Paytm\\": "packages/Wontonee/Paytm/src"
+        "Wontonee\\Paytm\\": "Wontonee/Paytm/src"
         }
     }
 ```
