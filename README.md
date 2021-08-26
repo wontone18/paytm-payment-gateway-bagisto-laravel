@@ -10,7 +10,7 @@ Paytm is a popular payment gateway in india. This package provides a additional 
         Wontonee\Paytm\Providers\PaytmServiceProvider::class,
 ]
 ```
-3. Now open composer.json and go to `autload psr-4`.
+3. Now open composer.json and go to `autoload psr-4`.
 ```sh
 "autoload": {
         "psr-4": {
@@ -48,7 +48,7 @@ protected $except = [
         Wontonee\Paytm\Providers\PaytmServiceProvider::class,
 ]
 ```
-4. Now open composer.json and go to `autload psr-4`.
+4. Now open composer.json and go to `autoload psr-4`.
 ```sh
 "autoload": {
         "psr-4": {
