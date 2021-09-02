@@ -13,13 +13,15 @@ class PaytmController extends Controller
     /**
      * OrderRepository $orderRepository
      *
-     * 
+     * @var \Webkul\Sales\Repositories\OrderRepository
      */
     protected $orderRepository;
 
     /**
      * Create a new controller instance.
      *
+     * @param  \Webkul\Attribute\Repositories\OrderRepository  $orderRepository
+     * @return void
      */
     public function __construct(OrderRepository $orderRepository)
     {
@@ -54,7 +56,7 @@ class PaytmController extends Controller
             "MOBILE_NO" => $billingAddress->phone,
             "EMAIL" => $billingAddress->email,
             "TXN_AMOUNT" => $total_amount,
-            "CALLBACK_URL" => Config::get('app.url') . "paytmcheck",
+            "CALLBACK_URL" => route('paytm.callback'),
         );
 
         $checksum = getChecksumFromArray($paytmParams, core()->getConfigData('sales.paymentmethods.paytm.merchant_key'));
