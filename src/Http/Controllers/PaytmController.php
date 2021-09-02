@@ -5,7 +5,8 @@ namespace Wontonee\Paytm\Http\Controllers;
 
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
-use Illuminate\Support\Facades\Config;
+use Webkul\Sales\Repositories\InvoiceRepository;
+use Webkul\Payment\Payment\Payment;
 
 class PaytmController extends Controller
 {
@@ -18,14 +19,22 @@ class PaytmController extends Controller
     protected $orderRepository;
 
     /**
+     * InvoiceRepository $invoiceRepository
+     *
+     * @var \Webkul\Sales\Repositories\InvoiceRepository
+     */
+    protected $invoiceRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @param  \Webkul\Attribute\Repositories\OrderRepository  $orderRepository
      * @return void
      */
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository,  InvoiceRepository $invoiceRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->invoiceRepository = $invoiceRepository;
     }
 
     /**
@@ -102,13 +111,34 @@ class PaytmController extends Controller
 
         if ($response['STATUS'] == "TXN_SUCCESS") {
             $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+            $this->orderRepository->update(['status' => 'processing'], $order->id);
+            if ($order->canInvoice()) {
+                $this->invoiceRepository->create($this->prepareInvoiceData($order));
+            }
             Cart::deActivateCart();
             session()->flash('order', $order);
+            // Order and prepare invoice
             return redirect()->route('shop.checkout.success');
         } else {
             session()->flash('error', 'Paytm payment either cancelled or transaction failure.');
 
             return redirect()->route('shop.checkout.cart.index');
         }
+    }
+
+    /**
+     * Prepares order's invoice data for creation.
+     *
+     * @return array
+     */
+    protected function prepareInvoiceData($order)
+    {
+        $invoiceData = ["order_id" => $order->id,];
+
+        foreach ($order->items as $item) {
+            $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
+        }
+
+        return $invoiceData;
     }
 }
