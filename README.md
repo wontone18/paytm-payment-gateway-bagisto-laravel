@@ -37,6 +37,7 @@ protected $except = [
            ];
 
 ```
+9. Last run a command from command prompt `php artisan config:cache`
 
 ## Manual Installation
 1. Download the zip folder from the github repository.
@@ -67,7 +68,7 @@ protected $except = [
 ```
 6. Now open the command prompt and run `composer dump-autoload`.
 7. Now run `php artisan config:cache`
-9. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
+8. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
 9. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
 ```sh
 protected $except = [
@@ -75,5 +76,6 @@ protected $except = [
            ];
 
 ```
+10. Last run a command from command prompt `php artisan config:cache`
 
 For any help or customisation  <https://www.wontonee.com> or email us <hello@wontonee.com>
