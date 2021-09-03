@@ -37,7 +37,6 @@ protected $except = [
            ];
 
 ```
-9. Last run a command from command prompt `php artisan config:cache`
 
 ## Manual Installation
 1. Download the zip folder from the github repository.
@@ -76,6 +75,5 @@ protected $except = [
            ];
 
 ```
-10. Last run a command from command prompt `php artisan config:cache`
 
 For any help or customisation  <https://www.wontonee.com> or email us <hello@wontonee.com>
