@@ -3,9 +3,11 @@
 
 namespace Wontonee\Paytm\Http\Controllers;
 
+use Illuminate\Contracts\Session\Session;
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Sales\Repositories\InvoiceRepository;
+use Wontonee\Paytm\lib\PaytmChecksum;
 use Webkul\Payment\Payment\Payment;
 
 class PaytmController extends Controller
@@ -42,74 +44,115 @@ class PaytmController extends Controller
      *
      * @return \Illuminate\View\View
      */
-
     public function redirect()
     {
         $cart = Cart::getCart();
 
         $billingAddress = $cart->billing_address;
 
-        include __DIR__ . '/../../lib/encdec_paytm.php';
-
         $shipping_rate = $cart->selected_shipping_rate ? $cart->selected_shipping_rate->price : 0; // shipping rate
         $discount_amount = $cart->discount_amount; // discount amount
         $total_amount =  ($cart->sub_total + $cart->tax_total + $shipping_rate) - $discount_amount; // total amount
+        $paytmParams = array();
+        $order_id = $cart->id . '_' . now()->format('YmdHis');
+        session()->put("order-id", $order_id);
 
-        $paytmParams = array(
-            "MID" => core()->getConfigData('sales.paymentmethods.paytm.merchant_id'),
-            "WEBSITE" => core()->getConfigData('sales.paymentmethods.paytm.website'),
-            "INDUSTRY_TYPE_ID" => "Retail",
-            "CHANNEL_ID" => "WEB",
-            "ORDER_ID" => $cart->id,
-            "CUST_ID" => $billingAddress->id,
-            "MOBILE_NO" => $billingAddress->phone,
-            "EMAIL" => $billingAddress->email,
-            "TXN_AMOUNT" => $total_amount,
-            "CALLBACK_URL" => route('paytm.callback'),
+
+        $paytmParams["body"] = array(
+            "requestType"   => "Payment",
+            "mid"           => core()->getConfigData('sales.payment_methods.paytm.merchant_id'),
+            "websiteName"   => core()->getConfigData('sales.payment_methods.paytm.website'),
+            "orderId"       => $order_id,
+            "callbackUrl"   => route('paytm.callback'),
+            "txnAmount"     => array(
+                "value"     => $total_amount,
+                "currency"  => "INR",
+            ),
+            "userInfo"      => array(
+                "custId"    => $billingAddress->id,
+            ),
         );
 
-        $checksum = getChecksumFromArray($paytmParams, core()->getConfigData('sales.paymentmethods.paytm.merchant_key'));
+        $checksum = PaytmChecksum::generateSignature(json_encode($paytmParams["body"], JSON_UNESCAPED_SLASHES), core()->getConfigData('sales.payment_methods.paytm.merchant_key'));
+        $paytmParams["head"] = array(
+            "channelId" => 'WEB',
+            "signature"    => $checksum
+        );
 
-        if (core()->getConfigData('sales.paymentmethods.paytm.website') == "WEBSTAGING") :
-            $url = "https://securegw-stage.paytm.in/order/process"; // test mode
+        $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
+
+        if (core()->getConfigData('sales.payment_methods.paytm.website') == "WEBSTAGING") :
+            $token_url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" . core()->getConfigData('sales.payment_methods.paytm.merchant_id') . "&orderId=" . $order_id;
+            $payment_url = "https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid=" . core()->getConfigData('sales.payment_methods.paytm.merchant_id') . "&orderId=" . $order_id;
         else :
-            $url = "https://securegw.paytm.in/order/process"; // Live mode
+            $token_url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=" . core()->getConfigData('sales.payment_methods.paytm.merchant_id') . "&orderId=" . $order_id;
+            $payment_url = "https://securegw.paytm.in/theia/api/v1/showPaymentPage?mid=" . core()->getConfigData('sales.payment_methods.paytm.merchant_id') . "&orderId=" . $order_id;
         endif;
-
-        return view('paytm::paytm-redirect')->with(compact('checksum', 'paytmParams', 'url'));
+        // retreive token from gateway server
+        $ch = curl_init($token_url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+        $response = curl_exec($ch);
+        $response_data = json_decode($response, true);
+        if (isset($response_data['body']['txnToken'])) {
+            $txnToken = $response_data['body']['txnToken']; // Extract txnToken value
+            // echo "Transaction Token: " . $txnToken;
+            return view('paytm::paytm-redirect', [
+                'payment_url' => $payment_url,
+                'txnToken' => $txnToken,
+                'orderId' => $order_id,
+                'mid' => core()->getConfigData('sales.payment_methods.paytm.merchant_id')
+            ]);
+        }
     }
-
-    /***
-     * 
-     * Call back url
+    /**
+     * order status check
      */
+
     public function checkstatus()
     {
 
-        include __DIR__ . '/../../lib/encdec_paytm.php';
-        $cart = Cart::getCart();
-
+        /* initialize an array */
         $paytmParams = array();
-        $paytmParams["MID"] = core()->getConfigData('sales.paymentmethods.paytm.merchant_id');
-        $paytmParams["ORDERID"] = $cart->id;
-        $checksum = getChecksumFromArray($paytmParams, core()->getConfigData('sales.paymentmethods.paytm.merchant_key'));
-        $paytmParams["CHECKSUMHASH"] = $checksum;
+
+        /* body parameters */
+        $paytmParams["body"] = array(
+            "mid" => core()->getConfigData('sales.payment_methods.paytm.merchant_id'),
+            "orderId" =>  session()->get('order-id')
+        );
+
+
+        $checksum = PaytmChecksum::generateSignature(json_encode($paytmParams["body"], JSON_UNESCAPED_SLASHES), core()->getConfigData('sales.payment_methods.paytm.merchant_key'));
+
+        /* head parameters */
+        $paytmParams["head"] = array(
+            "signature"    => $checksum
+        );
+
+        /* prepare JSON string for request */
         $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
 
-        if (core()->getConfigData('sales.paymentmethods.paytm.website') == "WEBSTAGING") :
-            $url = "https://securegw-stage.paytm.in/order/status"; // Test mode
+
+        if (core()->getConfigData('sales.payment_methods.paytm.website') == "WEBSTAGING") :
+            $url = "https://securegw-stage.paytm.in/v3/order/status";
         else :
-            $url = "https://securegw.paytm.in/order/status"; // Live mode
+            $url = "https://securegw.paytm.in/v3/order/status";
         endif;
+
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        $response = json_decode(curl_exec($ch), true);
+        $response = curl_exec($ch);
+        $response_data = json_decode($response, true);
 
-        if ($response['STATUS'] == "TXN_SUCCESS") {
+        if (isset($response_data['body']['resultInfo']['resultStatus']) && $response_data['body']['resultInfo']['resultStatus'] === 'TXN_SUCCESS') {
+            // Transaction is successful
+            session()->forget(session()->get('order-id')); // remove the order id from the session
             $order = $this->orderRepository->create(Cart::prepareDataForOrder());
             $this->orderRepository->update(['status' => 'processing'], $order->id);
             if ($order->canInvoice()) {
@@ -118,10 +161,10 @@ class PaytmController extends Controller
             Cart::deActivateCart();
             session()->flash('order', $order);
             // Order and prepare invoice
-            return redirect()->route('shop.checkout.success');
+            return redirect()->route('shop.checkout.onepage.success');
         } else {
+            // Transaction failed or resultStatus is not TXN_SUCCESS
             session()->flash('error', 'Paytm payment either cancelled or transaction failure.');
-
             return redirect()->route('shop.checkout.cart.index');
         }
     }

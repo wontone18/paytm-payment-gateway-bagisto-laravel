@@ -16,5 +16,6 @@ class Paytm extends Payment
     public function getRedirectUrl()
     {
         return route('paytm.process');
+        
     }
 }

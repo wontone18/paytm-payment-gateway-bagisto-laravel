@@ -3,7 +3,7 @@
 return [
     'error' => [
         'universal-error' => 'Something went wrong!',
-        'sdk-validation-error' => 'Merchant id is in invalid.',
-        'authorization-error' => 'Authorisation error.'
+        'sdk-validation-error' => 'Client ID not recognized for either production or sandbox!',
+        'authorization-error' => 'Client ID and Client Secret should be valid!'
     ]
 ];

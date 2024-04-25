@@ -1,9 +1,13 @@
 <?php
+use Illuminate\Support\Facades\Route;
+use Wontonee\Paytm\Http\Controllers\PaytmController;
+
 
 Route::group([
-    //   'prefix'     => 'paytm',
-       'middleware' => ['web', 'theme', 'locale', 'currency']
-   ], function () {
-       Route::get('redirect','Wontonee\Paytm\Http\Controllers\PaytmController@redirect')->name('paytm.process');
-       Route::post('paytmcheck','Wontonee\Paytm\Http\Controllers\PaytmController@checkstatus')->name('paytm.callback'); 
+    //   'prefix'     => 'payu',
+    'middleware' => ['web', 'theme', 'locale', 'currency']
+], function () {
+    Route::get('redirect',[PaytmController::class,'redirect'])->name('paytm.process');
+    Route::post('paytmcheck',[PaytmController::class,'checkstatus'])->name('paytm.callback'); 
 });
+

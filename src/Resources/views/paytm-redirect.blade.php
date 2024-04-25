@@ -12,11 +12,10 @@
     <center>
         <h1>Please do not refresh this page...</h1>
     </center>
-    <form method='post' action='{{ $url }}' name='paytm_form'>
-        @foreach($paytmParams as $key => $value)
-        <input type="hidden" value="{{ $value }}" name="{{ $key }}">
-        @endforeach
-        <input type="hidden" name="CHECKSUMHASH" value="{{ $checksum }}">
+    <form method='post' action='{{ $payment_url }}' name='paytm_form'>
+        <input type="hidden" name="mid" value="{{ $mid }}">
+        <input type="hidden" name="orderId" value="{{ $orderId }}">
+        <input type="hidden" name="txnToken" value="{{ $txnToken }}">
     </form>
     <script type="text/javascript">
         document.paytm_form.submit();

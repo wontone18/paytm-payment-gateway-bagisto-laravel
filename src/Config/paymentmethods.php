@@ -7,6 +7,6 @@ return [
         'description' => 'Paytm',
         'class'       => 'Wontonee\Paytm\Payment\Paytm',
         'active'      => true,
-        'sort'        => 4,
+        'sort'        => 8,
     ],
 ];

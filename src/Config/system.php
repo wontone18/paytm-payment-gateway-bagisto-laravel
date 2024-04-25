@@ -2,27 +2,28 @@
 
 return [
     [
-        'key'    => 'sales.paymentmethods.paytm',
+        'key'    => 'sales.payment_methods.paytm',
         'name'   => 'Paytm',
-        'sort'   => 4,
+        'info' => 'Paytm extension created for bagisto by wontonee.',
+        'sort'   => 8,
         'fields' => [
             [
                 'name'          => 'title',
-                'title'         => 'admin::app.admin.system.title',
+                'title'         => 'title',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
                 'locale_based'  => true,
             ], [
                 'name'          => 'description',
-                'title'         => 'admin::app.admin.system.description',
+                'title'         => 'description',
                 'type'          => 'textarea',
                 'channel_based' => false,
                 'locale_based'  => true,
             ],
 			[
                 'name'          => 'merchant_id',
-                'title'         => 'admin::app.admin.system.merchant-id',
+                'title'         => 'Merchant Id',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
@@ -30,7 +31,7 @@ return [
             ],	
 			[
                 'name'          => 'merchant_key',
-                'title'         => 'admin::app.admin.system.merchant-key',
+                'title'         => 'Merchant Key',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
@@ -38,8 +39,9 @@ return [
             ],
 			[
                 'name'    => 'website',
-                'title'   => 'admin::app.admin.system.websitestatus',
+                'title'   => 'Website Status',
                 'type'    => 'select',
+                'validation'    => 'required',
                 'options' => [
                     [
                         'title' => 'Staging',
@@ -52,7 +54,7 @@ return [
             ],
 			[
                 'name'          => 'active',
-                'title'         => 'admin::app.admin.system.paytmstatus',
+                'title'         => 'admin::app.configuration.index.sales.payment-methods.status',
                 'type'          => 'boolean',
                 'validation'    => 'required',
                 'channel_based' => false,

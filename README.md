@@ -1,75 +1,36 @@
 # Bagisto Paytm Payment Gateway
-Paytm is a popular payment gateway in india. This package provides a additional strong help for the user to use the paytm payment gateway in their Bagisto laravel ecommerce application.
+Paytm is a popular payment gateway in India. This package provides strong support for users to integrate the Paytm payment gateway into their Bagisto Laravel e-commerce applications.
 
-## Automatic Installation
-1. Use command prompt to run this package `composer require wontonee/paytm`
-2. Now open `config/app.php` and register paytm provider.
+## Installation
+1. Use the command prompt to install this package:
+```sh
+ composer require wontonee/paytm
+```
+
+2. Open `config/app.php` and register the Paytm provider.
 ```sh
 'providers' => [
         // Paytm provider
         Wontonee\Paytm\Providers\PaytmServiceProvider::class,
 ]
 ```
-3. Now go to `package/Webkul/Admin/src/Resources/lang/en` copy these line at the bottom end of code.
-```sh
-'merchant-id'                      => 'Merchant Id',
-'merchant-key'                      => 'Merchant Key',
-'websitestatus'                      => 'Website',
-'industrytype'                      => 'Industry Type',
-'paytmstatus'                      => 'Status',
-'callback-url'                      => 'Call Back URL'
-```
-4. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
-5. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
+3. Navigate to the `admin panel -> Configure/Payment Methods`, where Paytm will be visible at the end of the payment method list.
+
+4. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
 ```sh
 protected $except = [
                  '/paytmcheck'
            ];
+```
 
-```
-6. Now run `php artisan config:cache`
-
-## Manual Installation
-1. Download the zip folder from the github repository.
-2. Unzip the folder and go to your bagisto application path `package` and create a folder name `Wontonee/Paytm/` upload `src` folder inside this path.
-3. Now open `config/app.php` and register paytm provider.
+5. Now run 
 ```sh
-'providers' => [
-        // Paytm provider
-        Wontonee\Paytm\Providers\PaytmServiceProvider::class,
-]
-```
-4. Now open composer.json and go to `autoload psr-4`.
-```sh
-"autoload": {
-        "psr-4": {
-        "Wontonee\\Paytm\\": "packages/Wontonee/Paytm/src"
-        }
-    }
-```
-5. Now go to `package/Webkul/Admin/src/Resources/lang/en` copy these line at the bottom end of code.
-```sh
-'merchant-id'                      => 'Merchant Id',
-'merchant-key'                      => 'Merchant Key',
-'websitestatus'                      => 'Website',
-'industrytype'                      => 'Industry Type',
-'paytmstatus'                      => 'Status',
-'callback-url'                      => 'Call Back URL'
-```
-6. Now open the command prompt and run `composer dump-autoload`.
-7. Now run `php artisan config:cache`
-8. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway paytm. 
-9. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
-```sh
-protected $except = [
-                 '/paytmcheck'
-           ];
-
+php artisan config:cache
 ```
 
 ## Troubleshooting
 
-1. if anybody facing after placing a order you are not redirecting to payment gateway and getting a route error then simply go to `bootstrap/cache` and delete all the cache files.
+1. If you encounter an issue where you are not redirected to the payment gateway after placing an order and receive a route error, navigate to `bootstrap/cache` and delete all cache files.
 
 
-For any help or customisation  <https://www.wontonee.com> or email us <hello@wontonee.com>
+For any help or customization, visit <https://www.wontonee.com> or email us <dev@wontonee.com>

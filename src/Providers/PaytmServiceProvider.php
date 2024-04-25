@@ -26,7 +26,7 @@ class PaytmServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
     }
-
+    
     /**
      * Register package config.
      *
@@ -35,13 +35,11 @@ class PaytmServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/paymentmethods.php',
-            'paymentmethods'
+            dirname(__DIR__) . '/Config/paymentmethods.php', 'payment_methods'
         );
 
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/system.php',
-            'core'
+            dirname(__DIR__) . '/Config/system.php', 'core'
         );
     }
 }
