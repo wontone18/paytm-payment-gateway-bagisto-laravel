@@ -1,6 +1,8 @@
 # Bagisto Paytm Payment Gateway
 Paytm is a popular payment gateway in India. This package provides strong support for users to integrate the Paytm payment gateway into their Bagisto Laravel e-commerce applications.
 
+**<span style="color:red;">Support Bagisto v2.2. For Bagisto 2.1, you can downgrade the package to 5.0.1</span>**
+
 ## Installation
 1. Use the command prompt to install this package:
 ```sh
